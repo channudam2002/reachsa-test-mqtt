@@ -214,7 +214,7 @@ export default {
   },
   components: {},
   mounted() {
-    document.title = "Reachsa | MQTT Tester";
+    document.title = "Reachsa.io | MQTT Tester";
   },
 };
 </script>
