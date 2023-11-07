@@ -18,7 +18,7 @@
     >
       <p class="text-xl font-bold">Connect MQTT Server</p>
       <hr class="w-full" />
-      <form class="grid grid-cols-7 gap-3">
+      <form @submit.prevent="connectClient" class="grid grid-cols-7 gap-3">
         <div class="relative">
           <input
             type="text"
@@ -85,7 +85,7 @@
             autocomplete="new-password"
             type="password"
             required
-            v-model="Password"
+            v-model="password"
             id="password"
             class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
             placeholder=" "
@@ -108,9 +108,16 @@
           <div class="flex flex-col items-start">
             <p class="text-xs">Connection Status</p>
             <div
-              class="flex text-red-500 items-center space-x-3 max-w-max rounded-md"
+              class="flex items-center space-x-3 max-w-max rounded-md"
+              :class="
+                status == 'Connected'
+                  ? 'text-green-500'
+                  : status == 'Connecting'
+                  ? 'text-orange-500 animate-pulse'
+                  : 'text-red-500'
+              "
             >
-              <p class="text-xl font-bold">Not Connected</p>
+              <p class="text-xl font-bold">{{ status }}</p>
               <span class="material-symbols-outlined"> adjust </span>
             </div>
           </div>
@@ -128,6 +135,7 @@
             <input
               type="text"
               id="pubTopic"
+              v-model="pubTopic"
               class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
             />
@@ -142,26 +150,31 @@
               v-model="mode"
               class="border border-gray-300 rounded-md w-full"
             >
+              <option value="">Select Mode</option>
               <option value="loop" selected>Iteration</option>
               <option value="once">Once</option>
             </select>
           </div>
           <div class="relative col-span-1">
             <select
+              v-if="mode == 'loop'"
               v-model="time"
               class="border border-gray-300 rounded-md w-full"
             >
-              <option value="1" selected>Once per 1s</option>
+              <option value="">Select Time</option>
+              <option value="1">Once per 1s</option>
               <option value="2">Once per 2s</option>
               <option value="3">Once per 3s</option>
               <option value="4">Once per 4s</option>
               <option value="5">Once per 5s</option>
             </select>
+            <div v-else class="bg-gray-200 rounded-md w-full h-full"></div>
           </div>
           <div class="relative col-span-4">
             <input
               type="text"
               id="payload"
+              v-model="payload"
               class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
             />
@@ -188,6 +201,7 @@
             <input
               type="text"
               id="subTopic"
+              v-model="subTopic"
               class="block px-2.5 pb-2.5 pt-4 w-full text-sm text-gray-900 bg-transparent rounded-lg border-1 border-gray-300 appearance-none dark:text-white dark:border-gray-600 dark:focus:border-blue-500 focus:outline-none focus:ring-0 focus:border-blue-600 peer"
               placeholder=" "
             />
@@ -198,8 +212,19 @@
             >
           </div>
           <div>
-            <button class="text-white bg-green-500 p-3 rounded-md w-full">
+            <button
+              v-if="!isSubscribe"
+              @click="subscribe"
+              class="text-white bg-green-500 p-3 rounded-md w-full"
+            >
               Subscribe
+            </button>
+            <button
+              v-if="isSubscribe"
+              @click="unsubscribe"
+              class="text-white bg-yellow-500 p-3 rounded-md w-full"
+            >
+              Cancel
             </button>
           </div>
           <div
@@ -208,20 +233,16 @@
             <div class="flex flex-col space-y-2 sticky top-0 left-0">
               <p class="text-white">Subscribed Topic and Payload</p>
               <hr />
+              <div
+                v-if="subscribedData"
+                v-for="(subscribeData, index) in subscribedData"
+              >
+                <p>
+                  Topic: {{ subscribeData.topic }}, Payload:
+                  {{ subscribeData.payload }}
+                </p>
+              </div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="absolute top-[10px] left-[600px] w-full flex items-center justify-center">
-      <div class="flex-1 items-center justify-center relative">
-        <div class="relative font-koh-Santepheap text-xl p-5">
-          <div class="absolute top-0 left-0 z-10 w-full h-full">
-            <img src="./assets/banner-bg.gif" class="rounded-md z-10">
-          </div>
-          <div class="absolute z-50 px-14 drop-shadow-md">
-            <p>អបអរសាទរ​ ខួបលើកទី <span class="text-2xl font-bold">៧០</span> ទិវាបុណ្យ
-              <span class="text-3xl font-bold">ឯករាជ្យជាតិ</span> <span class="text-sm block text-end py-2">០៩​ វិច្ឆិកា ១៩៥៣ - ០៩​ វិច្ឆិកា ២០២៣</span></p>
           </div>
         </div>
       </div>
@@ -230,16 +251,76 @@
 </template>
 
 <script>
+import { useSocketStore } from "./stores/SocketStore";
 export default {
+  setup() {
+    const socketStore = useSocketStore();
+    return {
+      socketStore,
+    };
+  },
   name: "App",
   data() {
     return {
       status: "Not Connected",
+      port: undefined,
+      host: undefined,
+      protocol: undefined,
+      username: undefined,
+      password: undefined,
+
+      pubTopic: undefined,
+      payload: undefined,
+      mode: "",
+      time: "",
+
+      subscribedData: [],
+
+      subTopic: undefined,
+
+      isSubscribe: false,
     };
   },
   components: {},
   mounted() {
     document.title = "Reachsa.io | MQTT Tester";
+    this.socketStore.$subscribe((mutation, state) => {
+      console.log(state);
+      if (state._topic || state._message) {
+        let data = {};
+        data["topic"] = state._topic;
+        data["payload"] = state._message;
+        this.subscribedData.push(data);
+      }
+    });
+  },
+  methods: {
+    connectClient() {
+      this.socketStore.connectSocket("https://websocket.reachsa.digital");
+      this.socketStore.client.on("connect", () => {
+        this.socketStore.client.emit(
+          "connectMqtt",
+          this.host,
+          this.port,
+          this.protocol,
+          this.username,
+          this.password,
+          false
+        );
+      });
+      this.status = "Connecting";
+      setTimeout(() => {
+        this.status = "Connected";
+      }, 3000);
+    },
+    subscribe() {
+      this.isSubscribe = true;
+      this.socketStore.subscribe(this.subTopic);
+    },
+    unsubscribe() {
+      this.isSubscribe = false;
+      this.socketStore.unsubscribe(this.subTopic);
+    },
   },
 };
 </script>
@@ -247,9 +328,6 @@ export default {
 <style>
 #app {
   font-family: Poppins, Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
   color: #2c3e50;
 }
 </style>
