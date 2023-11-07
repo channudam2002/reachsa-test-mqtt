@@ -228,7 +228,7 @@
             </button>
           </div>
           <div
-            class="relative text-white col-span-5 bg-neutral-700 p-3 rounded-md w-full h-96 flex flex-col space-y-2 text-start overflow-y-scroll"
+            class="relative text-white col-span-5 bg-neutral-700 p-3 rounded-md w-full h-96 flex flex-col space-y-2 text-start overflow-y-scroll scroll-auto"
           >
             <div class="flex flex-col space-y-2 sticky top-0 left-0">
               <p class="text-white">Subscribed Topic and Payload</p>
@@ -238,8 +238,8 @@
                 v-for="(subscribeData, index) in subscribedData"
               >
                 <p>
-                  Topic: {{ subscribeData.topic }}, Payload:
-                  {{ subscribeData.payload }}
+                  Topic: <span class="text-yellow-300">{{ subscribeData.topic }}</span> - Payload:
+                  <span class="text-cyan-300">{{ subscribeData.payload }}</span>
                 </p>
               </div>
             </div>
