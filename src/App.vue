@@ -217,11 +217,11 @@
       <div class="flex-1 items-center justify-center relative">
         <div class="relative font-koh-Santepheap text-xl p-5">
           <div class="absolute top-0 left-0 z-10 w-full h-full">
-            <img src="./assets/banner-bg.gif" class="shadow-md rounded-md z-10">
+            <img src="./assets/banner-bg.gif" class="rounded-md z-10">
           </div>
           <div class="absolute z-50 px-14 drop-shadow-md">
             <p>អបអរសាទរ​ ខួបលើកទី <span class="text-2xl font-bold">៧០</span> ទិវាបុណ្យ
-              <span class="text-3xl font-bold">ឯករាជ្យជាតិ</span></p>
+              <span class="text-3xl font-bold">ឯករាជ្យជាតិ</span> <span class="text-sm block text-end py-2">០៩​ វិច្ឆិកា ១៩៥៣ - ០៩​ វិច្ឆិកា ២០២៣</span></p>
           </div>
         </div>
       </div>
