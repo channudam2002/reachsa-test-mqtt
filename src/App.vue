@@ -138,13 +138,19 @@
             >
           </div>
           <div class="relative col-span-1">
-            <select v-model="mode" class="border border-gray-300 rounded-md w-full">
+            <select
+              v-model="mode"
+              class="border border-gray-300 rounded-md w-full"
+            >
               <option value="loop" selected>Iteration</option>
               <option value="once">Once</option>
             </select>
           </div>
-          <div  class="relative col-span-1">
-            <select v-model="time" class="border border-gray-300 rounded-md w-full">
+          <div class="relative col-span-1">
+            <select
+              v-model="time"
+              class="border border-gray-300 rounded-md w-full"
+            >
               <option value="1" selected>Once per 1s</option>
               <option value="2">Once per 2s</option>
               <option value="3">Once per 3s</option>
@@ -166,7 +172,9 @@
             >
           </div>
           <div>
-            <button class="text-white bg-blue-500 p-3 rounded-md w-full">Publish</button>
+            <button class="text-white bg-blue-500 p-3 rounded-md w-full">
+              Publish
+            </button>
           </div>
         </div>
       </div>
@@ -190,13 +198,30 @@
             >
           </div>
           <div>
-            <button class="text-white bg-green-500 p-3 rounded-md w-full">Subscribe</button>
+            <button class="text-white bg-green-500 p-3 rounded-md w-full">
+              Subscribe
+            </button>
           </div>
-          <div class="relative text-white col-span-5 bg-neutral-700 p-3 rounded-md w-full h-96 flex flex-col space-y-2 text-start overflow-y-scroll">
+          <div
+            class="relative text-white col-span-5 bg-neutral-700 p-3 rounded-md w-full h-96 flex flex-col space-y-2 text-start overflow-y-scroll"
+          >
             <div class="flex flex-col space-y-2 sticky top-0 left-0">
               <p class="text-white">Subscribed Topic and Payload</p>
-              <hr>
+              <hr />
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="absolute top-[10px] left-[600px] w-full flex items-center justify-center">
+      <div class="flex-1 items-center justify-center relative">
+        <div class="relative font-koh-Santepheap text-xl p-5">
+          <div class="absolute top-0 left-0 z-10 w-full h-full">
+            <img src="./assets/banner-bg.gif" class="shadow-md rounded-md z-10">
+          </div>
+          <div class="absolute z-50 px-14 drop-shadow-md">
+            <p>អបអរសាទរ​ ខួបលើកទី <span class="text-2xl font-bold">៧០</span> ទិវាបុណ្យ
+              <span class="text-3xl font-bold">ឯករាជ្យជាតិ</span></p>
           </div>
         </div>
       </div>
