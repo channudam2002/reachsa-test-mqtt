@@ -289,8 +289,8 @@ export default {
   },
   methods: {
     connectClient() {
-      // this.socketStore.connectSocket("https://websocket.reachsa.digital");
-      this.socketStore.connectSocket("http://localhost:3000");
+      this.socketStore.connectSocket("https://websocket.reachsa.digital");
+      // this.socketStore.connectSocket("http://localhost:3000");
       this.socketStore.client.on("connect", () => {
         this.socketStore.client.emit(
           "connectMqtt",
