@@ -238,7 +238,9 @@
                 v-for="(subscribeData, index) in subscribedData"
               >
                 <p>
-                  Topic: <span class="text-yellow-300">{{ subscribeData.topic }}</span> - Payload:
+                  Topic:
+                  <span class="text-yellow-300">{{ subscribeData.topic }}</span>
+                  - Payload:
                   <span class="text-cyan-300">{{ subscribeData.payload }}</span>
                 </p>
               </div>
@@ -284,19 +286,11 @@ export default {
   components: {},
   mounted() {
     document.title = "Reachsa.io | MQTT Tester";
-    this.socketStore.$subscribe((mutation, state) => {
-      console.log(state);
-      if (state._topic || state._message) {
-        let data = {};
-        data["topic"] = state._topic;
-        data["payload"] = state._message;
-        this.subscribedData.push(data);
-      }
-    });
   },
   methods: {
     connectClient() {
-      this.socketStore.connectSocket("https://websocket.reachsa.digital");
+      // this.socketStore.connectSocket("https://websocket.reachsa.digital");
+      this.socketStore.connectSocket("http://localhost:3000");
       this.socketStore.client.on("connect", () => {
         this.socketStore.client.emit(
           "connectMqtt",
@@ -316,6 +310,14 @@ export default {
     subscribe() {
       this.isSubscribe = true;
       this.socketStore.subscribe(this.subTopic);
+      this.socketStore.client.on("message", (topic, message, socketId) => {
+        if (topic || message) {
+          let data = {};
+          data["topic"] = topic;
+          data["payload"] = message.toString();
+          this.subscribedData.push(data);
+        }
+      });
     },
     unsubscribe() {
       this.isSubscribe = false;

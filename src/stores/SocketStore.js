@@ -13,13 +13,13 @@ export const useSocketStore = defineStore('socketStore', {
   actions:{
     connectSocket(url){
         this.client = io(url);
-        this.client.on('connect', ()=>{
-          this.client.on('message', (_topic, _message, _socketId)=>{
-            this._topic = _topic;
-            this._message = _message;
-            this._socketId = _socketId;
-          });
-        })
+        // this.client.on('connect', ()=>{
+        //   this.client.on('message', (_topic, _message, _socketId)=>{
+        //     this._topic = _topic;
+        //     this._message = _message;
+        //     this._socketId = _socketId;
+        //   });
+        // })
     },
     publish(topic, message){
       this.client.emit('publish', topic, message);
