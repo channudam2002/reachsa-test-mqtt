@@ -108,16 +108,24 @@
           <div class="flex flex-col items-start">
             <p class="text-xs">Connection Status</p>
             <div
-              class="flex items-center space-x-3 max-w-max rounded-md"
-              :class="
-                status == 'Connected'
-                  ? 'text-green-500'
-                  : status == 'Connecting'
-                  ? 'text-orange-500 animate-pulse'
-                  : 'text-red-500'
-              "
+              v-if="socketStore.mqttConnectionStatus == 0"
+              class="flex items-center space-x-3 max-w-max rounded-md text-red-500"
             >
-              <p class="text-xl font-bold">{{ status }}</p>
+              <p class="text-xl font-bold">Not Connected</p>
+              <span class="material-symbols-outlined"> adjust </span>
+            </div>
+            <div
+              v-if="socketStore.mqttConnectionStatus == 1"
+              class="flex items-center space-x-3 max-w-max rounded-md animate-pulse text-orange-500"
+            >
+              <p class="text-xl font-bold">Connecting</p>
+              <span class="material-symbols-outlined"> adjust </span>
+            </div>
+            <div
+              v-if="socketStore.mqttConnectionStatus == 2"
+              class="flex items-center space-x-3 max-w-max rounded-md text-green-500"
+            >
+              <p class="text-xl font-bold">Connected</p>
               <span class="material-symbols-outlined"> adjust </span>
             </div>
           </div>
@@ -264,7 +272,6 @@ export default {
   name: "App",
   data() {
     return {
-      status: "Not Connected",
       port: undefined,
       host: undefined,
       protocol: undefined,
@@ -302,21 +309,15 @@ export default {
           false
         );
       });
-      this.status = "Connecting";
-      setTimeout(() => {
-        this.status = "Connected";
-      }, 3000);
     },
     subscribe() {
       this.isSubscribe = true;
       this.socketStore.subscribe(this.subTopic);
-      this.socketStore.client.on("message", (topic, message, socketId) => {
-        if (topic || message) {
-          let data = {};
-          data["topic"] = topic;
-          data["payload"] = message.toString();
-          this.subscribedData.push(data);
-        }
+      this.socketStore.$subscribe((mutation, state) => {
+        this.subscribedData.push({
+          topic: state.topic,
+          payload: state.message
+        })
       });
     },
     unsubscribe() {
